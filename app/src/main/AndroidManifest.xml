@@ -85,6 +85,7 @@
         <activity android:name=".activity.WaterWaveActivity" />
         <activity android:name=".activity.BaiDuVoiceMadeActivity" />
         <activity android:name=".activity.LeonidsActivity" />
+        <activity android:name=".activity.ExplosionAnimationActivity" />
         <!-- 设备管理 -->
         <receiver android:name=".AdminReceiver"
             android:permission="android.permission.BIND_DEVICE_ADMIN">

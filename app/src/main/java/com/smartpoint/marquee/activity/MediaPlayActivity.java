@@ -36,6 +36,7 @@ public class MediaPlayActivity extends AppCompatActivity {
     private float limitedX = 10;//滑动限制超过10px才进行
     private int skipSize = 5000;//videoView快进或者后退的时间
     private String url = "http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4";
+    private String path;
     private VideoView videoView;
     private float volume = 1;
     @Override
@@ -46,15 +47,13 @@ public class MediaPlayActivity extends AppCompatActivity {
         getSizeOfScreen();
         initVideoView();
     }
-    private void initSurfaceView(){
-
-    }
     //videoView初始化
 
     @SuppressLint("ClickableViewAccessibility")
     private void initVideoView(){
         videoView = findViewById(R.id.videoView);
-        videoView.setVideoURI(Uri.parse(url));
+        path = "android.resource://" + getPackageName() + "/" + R.raw.video;
+        videoView.setVideoURI(Uri.parse(path));
         videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(MediaPlayer mp) {

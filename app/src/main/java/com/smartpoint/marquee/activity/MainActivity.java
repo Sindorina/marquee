@@ -118,6 +118,9 @@ public class MainActivity extends AppCompatActivity {
                     case 11://粒子效果
                         LeonidsActivity.start(MainActivity.this);
                         break;
+                    case 12://view 破坏效果
+                        ExplosionAnimationActivity.start(MainActivity.this);
+                        break;
                 }
             }
         });
@@ -410,6 +413,7 @@ public class MainActivity extends AppCompatActivity {
         list.add("waterWave");
         list.add("百度语音合成");
         list.add("粒子效果");
+        list.add("view破坏效果");
         return list;
     }
 

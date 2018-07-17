@@ -24,12 +24,13 @@ public class DistinctActivity extends AppCompatActivity {
         activity.startActivity(intent);
     }
 
-    TextView textView;
+    TextView textView,textView2;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_distinct);
         textView = findViewById(R.id.textView);
+        textView2 = findViewById(R.id.textView2);
         testDistinct();
     }
     /**
@@ -58,9 +59,14 @@ public class DistinctActivity extends AppCompatActivity {
         list.add("厕所");list.add("厕所");
         list.add("楼梯");list.add("护士站");
         list.add("厕所");
+        textView.append("原数据-->");
+        for (String s:list){
+            textView.append(s);
+        }
         List<String> list1 = distinctBySetOrder(list);
+        textView2.append("去重后数据-->");
         for (String str:list1) {
-           textView.append(str);
+           textView2.append(str);
         }
     }
 }
