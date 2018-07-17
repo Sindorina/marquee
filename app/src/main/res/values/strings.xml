@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Marquee2</string>
+    <string name="open">打开</string>
+    <string name="close">关闭</string>
+    <string name="success">为你找到以下目的地</string>
+    <string name="fail">我没有听清</string>
+</resources>
