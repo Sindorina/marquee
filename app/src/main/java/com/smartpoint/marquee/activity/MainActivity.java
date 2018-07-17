@@ -317,7 +317,7 @@ public class MainActivity extends AppCompatActivity {
                 CountDownTimerActivity.start(MainActivity.this);
                 return true;
             case R.id.chrome:
-                CountDownTimerActivity.start(MainActivity.this);
+                GoogleActivity.start(MainActivity.this);
                 return true;
             case R.id.distinct:
                 DistinctActivity.start(MainActivity.this);
