@@ -35,7 +35,7 @@ public class ExplosionAnimationActivity extends BaseActivity{
 
     @Override
     public void initView() {
-        btn = findViewByIdNoCast(R.id.textView);
+        btn = findViewByIdNoCast(R.id.btn);
         btn.setOnClickListener(this);
         imageView = findViewByIdNoCast(R.id.imageView);
         imageView.setOnClickListener(this);
