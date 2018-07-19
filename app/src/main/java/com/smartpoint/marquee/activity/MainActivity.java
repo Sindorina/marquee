@@ -149,6 +149,7 @@ public class MainActivity extends BaseActivity {
                         break;
                     case 12://view 破坏效果
                         ExplosionAnimationActivity.start(MainActivity.this);
+                        break;
                     case 13://画图
                         ValueAnimatorActivity.start(MainActivity.this);
                         break;
@@ -569,7 +570,7 @@ public class MainActivity extends BaseActivity {
                         DecodeActivity.start(MainActivity.this);
                         break;
                     case 10://jni测试
-                        openPopWindow();
+                        JniActivity.start(MainActivity.this);
                         break;
                     case 11://重启
                         openPopWindow();
