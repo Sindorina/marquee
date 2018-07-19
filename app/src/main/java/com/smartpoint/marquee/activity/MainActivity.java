@@ -4,15 +4,21 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -21,14 +27,27 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.PopupWindow;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.scwang.smartrefresh.layout.SmartRefreshLayout;
+import com.scwang.smartrefresh.layout.api.RefreshLayout;
+import com.scwang.smartrefresh.layout.footer.ClassicsFooter;
+import com.scwang.smartrefresh.layout.header.ClassicsHeader;
+import com.scwang.smartrefresh.layout.listener.OnLoadMoreListener;
+import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
+import com.smartpoint.GlideImageLoader;
+import com.smartpoint.adapter.FindAdapter;
 import com.smartpoint.adapter.MyAdapter;
+import com.smartpoint.adapter.RefreshAdapter;
 import com.smartpoint.marquee.AEStool;
 import com.smartpoint.marquee.MD5Util;
 import com.smartpoint.marquee.R;
+import com.smartpoint.marquee.base.BaseActivity;
 import com.tbruyelle.rxpermissions2.Permission;
 import com.tbruyelle.rxpermissions2.RxPermissions;
+import com.youth.banner.Banner;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -54,7 +73,7 @@ import javax.net.ssl.X509TrustManager;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
     public static final String METHOD_GET = "GET";
     public String BaseUri = "https://apiequipment.signp.cn";
     public String key = "56a8d122ec0d330d6d9f541b459e43e1";
@@ -65,13 +84,23 @@ public class MainActivity extends AppCompatActivity {
     private ListView listView;
     private MyAdapter adapter;
     private DrawerLayout drawerLayout;
+    private SmartRefreshLayout smartRefreshLayout;
+    private RecyclerView recyclerView;
     // 抽屉菜单对象
     private ActionBarDrawerToggle drawerbar;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+    public int getContentViewId() {
+        return R.layout.activity_main;
+    }
+
+    @Override
+    public void beforeInitView() {
+
+    }
+
+    @Override
+    public void initView() {
         getCpuInfo();
         test = findViewById(R.id.test);
         listView = findViewById(R.id.listView);
@@ -120,6 +149,8 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case 12://view 破坏效果
                         ExplosionAnimationActivity.start(MainActivity.this);
+                    case 13://画图
+                        ValueAnimatorActivity.start(MainActivity.this);
                         break;
                 }
             }
@@ -135,12 +166,13 @@ public class MainActivity extends AppCompatActivity {
                 //httpsTest("/panel");
             }
         }).start();
-        findViewById(R.id.btn_rxjava).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                RxJavaLearnActivity.start(MainActivity.this);
-            }
-        });
+
+    }
+
+    @Override
+    public void initData() {
+        initBanner();
+        initRefresh();
     }
 
     private String getInfo() {
@@ -214,6 +246,11 @@ public class MainActivity extends AppCompatActivity {
         } catch (KeyManagementException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void onClick(View v) {
+
     }
 
 
@@ -414,6 +451,7 @@ public class MainActivity extends AppCompatActivity {
         list.add("百度语音合成");
         list.add("粒子效果");
         list.add("view破坏效果");
+        list.add("画图");
         return list;
     }
 
@@ -456,5 +494,156 @@ public class MainActivity extends AppCompatActivity {
         Log.e("OST", "cpu型号-->" + cpuInfo[0]);
         Log.e("OST", "cpu频率-->" + cpuInfo[1]);
         return cpuInfo[0];
+    }
+    private void initBanner(){
+        list.add("http://pic5.photophoto.cn/20071228/0034034901778224_b.jpg");
+        list.add("http://pic21.photophoto.cn/20111106/0020032891433708_b.jpg");
+        list.add("http://pic9.photophoto.cn/20081128/0033033999061521_b.jpg");
+        list.add("http://imgsrc.baidu.com/imgad/pic/item/34fae6cd7b899e51fab3e9c048a7d933c8950d21.jpg");
+        list.add("http://pic17.nipic.com/20111022/8575840_114126243000_2.jpg");
+        list.add("http://imgsrc.baidu.com/image/c0%3Dpixel_huitu%2C0%2C0%2C294%2C40/sign=aa22fdf148166d222c7a1dd42f5b6c9b/5ab5c9ea15ce36d32ae0f90a31f33a87e950b120.jpg");
+        list.add("http://pic11.photophoto.cn/20090415/0020032851022998_b.jpg");
+        list.add("http://imgsrc.baidu.com/image/c0%3Dshijue1%2C0%2C0%2C294%2C40/sign=5e310a4ddb09b3deffb2ec2ba4d606f4/9d82d158ccbf6c81887581cdb63eb13533fa4050.jpg");
+        list.add("http://pic32.photophoto.cn/20140817/0034034463193076_b.jpg");
+        banner = findViewByIdNoCast(R.id.banner);
+        banner.setImageLoader(new GlideImageLoader());
+        banner.setImages(list);
+        banner.start();
+    }
+    private void initRefresh(){
+        list = new ArrayList<>();
+        recyclerView = findViewByIdNoCast(R.id.recyclerView);
+        smartRefreshLayout = findViewByIdNoCast(R.id.smartRefreshLayout);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        adapter1 = new RefreshAdapter(list,R.layout.find_pop_item);
+        recyclerView.setAdapter(adapter1);
+        smartRefreshLayout.setRefreshHeader(new ClassicsHeader(this));
+        smartRefreshLayout.setRefreshFooter(new ClassicsFooter(this));
+        smartRefreshLayout.setOnRefreshListener(new OnRefreshListener() {
+            @Override
+            public void onRefresh(@NonNull RefreshLayout refreshLayout) {
+                adapter1.getContacts().clear();
+                setFuncInfo();
+            }
+        });
+        smartRefreshLayout.setOnLoadMoreListener(new OnLoadMoreListener() {
+            @Override
+            public void onLoadMore(@NonNull RefreshLayout refreshLayout) {
+                adapter1.getContacts().clear();
+                setFuncInfo();
+            }
+        });
+        setFuncInfo();
+        adapter1.setOnItemClick(new RefreshAdapter.OnItemClick() {
+            @Override
+            public void clickItem(int position) {
+                switch (position){
+                    case 0://webView
+                        WebViewActivity.start(MainActivity.this);
+                        break;
+                    case 1://vr
+                        VRActivity.start(MainActivity.this);
+                        break;
+                    case 2://选择器
+                        PickerViewActivity.start(MainActivity.this);
+                        break;
+                    case 3://腾讯webview
+                        TencentWebViewActivity.start(MainActivity.this);
+                        break;
+                    case 4://播放器
+                        MediaPlayActivity.start(MainActivity.this);
+                        break;
+                    case 5://二维码
+                        ZxinActivity.start(MainActivity.this);
+                        break;
+                    case 6://覆盖安装
+                        SQLiteActivity.start(MainActivity.this);
+                        break;
+                    case 7://数据库
+                        LitePalActivity.start(MainActivity.this);
+                        break;
+                    case 8://litePal数据库
+                        LitePalActivity.start(MainActivity.this);
+                        break;
+                    case 9://新扫码枪
+                        DecodeActivity.start(MainActivity.this);
+                        break;
+                    case 10://jni测试
+                        openPopWindow();
+                        break;
+                    case 11://重启
+                        openPopWindow();
+                        break;
+                    case 12://页面亮度展示
+                        if (lightSwitch) {
+                            lightSwitch = false;
+                            lightTest(-1.0f);
+                        } else {
+                            lightSwitch = true;
+                            lightTest(0.00000000000000000000000000001f);
+                        }
+                        break;
+                    case 13://锁屏
+                        ScreenLockActivity.start(MainActivity.this);
+                        break;
+                    case 14://倒计时
+                        CountDownTimerActivity.start(MainActivity.this);
+                        break;
+                    case 15://字符拆分
+                        GoogleActivity.start(MainActivity.this);
+                        break;
+                    case 16://去重
+                        DistinctActivity.start(MainActivity.this);
+                        break;
+                    case 17://SVG
+                        SvgActivity.start(MainActivity.this);
+                        break;
+
+                }
+            }
+        });
+    }
+    private RefreshAdapter adapter1;
+    private Banner banner;
+    private List<String> list = new ArrayList<>();
+
+    /**
+     * 设置功能列表数据
+     */
+    private void setFuncInfo(){
+        List<String> listInfo = new ArrayList<>();
+        listInfo.add("webView");
+        listInfo.add("vr全景");
+        listInfo.add("选择器");
+        listInfo.add("腾讯webview");
+        listInfo.add("播放器");
+        listInfo.add("二维码");
+        listInfo.add("覆盖安装");
+        listInfo.add("数据库");
+        listInfo.add("litePal数据库");
+        listInfo.add("新扫码枪");
+        listInfo.add("jni测试");
+        listInfo.add("重启");
+        listInfo.add("页面亮度展示");
+        listInfo.add("屏幕锁定");
+        listInfo.add("倒计时");
+        listInfo.add("字符拆分");
+        listInfo.add("去重");
+        listInfo.add("SVG");
+        adapter1.getContacts().addAll(listInfo);
+        adapter1.notifyDataSetChanged();
+        smartRefreshLayout.finishLoadMore();
+        smartRefreshLayout.finishRefresh();
+    }
+    //打开弹出框
+    private void openPopWindow(){
+        View view = LayoutInflater.from(this).inflate(R.layout.no_content_show,null,false);
+        PopupWindow popupWindow = new PopupWindow(view,400,200);
+        popupWindow.setFocusable(true);
+        popupWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        popupWindow.setOutsideTouchable(true);
+        popupWindow.setAnimationStyle(R.style.mypopwindow_anim_style);
+        popupWindow.showAtLocation(drawerLayout, Gravity.CENTER,0,0);
+
     }
 }

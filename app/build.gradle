@@ -57,10 +57,14 @@ dependencies {
     api 'com.github.lecho:hellocharts-android:v1.5.8'
     api 'com.koushikdutta.async:androidasync:2.+'
     api 'com.skyfishjy.ripplebackground:library:1.0.1'
+    api 'com.youth.banner:banner:1.4.10'
+    api 'com.scwang.smartrefresh:SmartRefreshLayout:1.1.0-alpha-12'
+    //最新版本
     implementation files('src/main/jniLibs/jna.jar')
     implementation files('src/main/jniLibs/android-armv7.jar')
     implementation files('src/main/jniLibs/tbs.jar')
     implementation project(':zxing')
     implementation files('src/main/jniLibs/com.baidu.tts_2.3.2.20180419_5a5fec8.jar')
     implementation files('src/main/jniLibs/bdasr_V3_20180320_9066860.jar')
+    implementation 'com.github.bumptech.glide:glide:4.7.1'
 }

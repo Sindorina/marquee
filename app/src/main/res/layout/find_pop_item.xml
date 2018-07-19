@@ -10,7 +10,8 @@
         android:textColor="@android:color/black"
         android:gravity="center"
         android:background="@drawable/btn_select_bg"
-        android:textSize="24sp"/>
+        android:fontFamily="@font/kaiti"
+        android:textSize="18sp"/>
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
