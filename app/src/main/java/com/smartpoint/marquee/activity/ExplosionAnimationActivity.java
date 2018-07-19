@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.smartpoint.explosionfield.ExplosionField;
@@ -19,6 +20,7 @@ public class ExplosionAnimationActivity extends BaseActivity{
     private ImageView imageView;
     private ExplosionField explosionField;
     private Button btn;
+    private int width,height;
     public static void start(Activity activity) {
         Intent intent = new Intent(activity, ExplosionAnimationActivity.class);
         activity.startActivity(intent);
@@ -38,6 +40,8 @@ public class ExplosionAnimationActivity extends BaseActivity{
         btn = findViewByIdNoCast(R.id.btn);
         btn.setOnClickListener(this);
         imageView = findViewByIdNoCast(R.id.imageView);
+        width = imageView.getWidth();
+        height = imageView.getHeight();
         imageView.setOnClickListener(this);
         explosionField = ExplosionField.attach2Window(this);
     }
@@ -52,11 +56,13 @@ public class ExplosionAnimationActivity extends BaseActivity{
         switch (v.getId()){
             case R.id.imageView:
                 explosionField.explode(imageView);
-                imageView.setVisibility(View.GONE);
                 break;
             case R.id.textView:
-                explosionField.clear();
-                imageView.setVisibility(View.VISIBLE);
+                imageView.setAlpha(1.0f);
+                LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) imageView.getLayoutParams();
+                lp.width = width;
+                lp.height = height;
+                imageView.setLayoutParams(lp);
                 break;
         }
     }
