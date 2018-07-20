@@ -13,6 +13,7 @@ import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.JniUtils;
 import com.smartpoint.marquee.R;
 import com.sun.jna.Library;
 import com.sun.jna.Native;
@@ -69,6 +70,10 @@ public class JniActivity extends AppCompatActivity {
                 setVisable(false,false,true,false);
                 tv.setText("本地数据不完整");
                 return true;
+            case R.id.item5://jni
+                setVisable(false,false,true,false);
+                tv.setText(JniUtils.stringFromJNI());
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -104,4 +109,5 @@ public class JniActivity extends AppCompatActivity {
             versionTV.setVisibility(View.GONE);
         }
     }
+
 }
