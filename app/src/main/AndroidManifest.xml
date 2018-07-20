@@ -31,6 +31,7 @@
     <uses-permission android:name="android.permission.DEVICE_POWER"/>
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.USE_FINGERPRINT"/>
     <application
         android:allowBackup="true"
         android:name="com.smartpoint.MyApplication"
@@ -87,6 +88,7 @@
         <activity android:name=".activity.LeonidsActivity" />
         <activity android:name=".activity.ExplosionAnimationActivity" />
         <activity android:name=".activity.ValueAnimatorActivity" />
+        <activity android:name=".activity.FingerprintsRecogActivity" />
         <!-- 设备管理 -->
         <receiver android:name=".AdminReceiver"
             android:permission="android.permission.BIND_DEVICE_ADMIN">

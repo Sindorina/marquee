@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/drawerLayout"
     tools:context=".activity.MainActivity">
         <com.scwang.smartrefresh.layout.SmartRefreshLayout
@@ -32,8 +33,25 @@
                     android:scrollHorizontally="true"
                     android:singleLine="true"
                     android:textSize="40sp" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+                    <com.kyleduo.switchbutton.SwitchButton
+                        android:id="@+id/switchBtn"
+                        android:layout_marginLeft="10dp"
+                        app:kswTextOn=" bgm on "
+                        app:kswTextOff=" bgm off "
+                        app:kswThumbColor="#01F900"
+                        android:layout_width="wrap_content"
+                        app:kswThumbWidth="30dp"
+                        app:kswThumbHeight="20dp"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/recyclerView"
+                    android:layout_marginTop="10dp"
                     android:overScrollMode="never"
                     android:background="#fff"
                     android:layout_width="match_parent"

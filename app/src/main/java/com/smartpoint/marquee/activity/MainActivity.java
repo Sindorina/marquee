@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -26,11 +28,13 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
+import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.kyleduo.switchbutton.SwitchButton;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.footer.ClassicsFooter;
@@ -45,6 +49,7 @@ import com.smartpoint.marquee.AEStool;
 import com.smartpoint.marquee.MD5Util;
 import com.smartpoint.marquee.R;
 import com.smartpoint.marquee.base.BaseActivity;
+import com.smartpoint.util.LogUtils;
 import com.tbruyelle.rxpermissions2.Permission;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.youth.banner.Banner;
@@ -77,7 +82,7 @@ public class MainActivity extends BaseActivity {
     public static final String METHOD_GET = "GET";
     public String BaseUri = "https://apiequipment.signp.cn";
     public String key = "56a8d122ec0d330d6d9f541b459e43e1";
-    private TextView test;
+    private TextView test,textView;
     private StringBuilder stringBuilder1 = new StringBuilder();
     View view;//底部弹出的dialog的显示View
     private boolean lightSwitch = false;
@@ -88,7 +93,10 @@ public class MainActivity extends BaseActivity {
     private RecyclerView recyclerView;
     // 抽屉菜单对象
     private ActionBarDrawerToggle drawerbar;
-
+    private SwitchButton switchButton ;
+    private MediaPlayer mediaPlayer;
+    private String[]bgms = new String[3];
+    private int curBgm = 0;//当前bgm
     @Override
     public int getContentViewId() {
         return R.layout.activity_main;
@@ -96,18 +104,40 @@ public class MainActivity extends BaseActivity {
 
     @Override
     public void beforeInitView() {
-
+        checkPermission();
+        String path = Environment.getExternalStorageDirectory().getAbsolutePath()+"/music/";
+        bgms[0] = path+"bg1.mp3";bgms[1] = path+"bg2.mp3";bgms[2] = path+"bg3.mp3";
+        File file = new File(path);
+        String [] arr = file.list();
+        for (String s:arr){
+            LogUtils.logE("MainActivity","文件-->"+s);
+        }
     }
 
     @Override
     public void initView() {
         getCpuInfo();
+        switchButton = findViewByIdNoCast(R.id.switchBtn);
         test = findViewById(R.id.test);
         listView = findViewById(R.id.listView);
         adapter = new MyAdapter();
         listView.setAdapter(adapter);
         adapter.addData(getListData());
         adapter.notifyDataSetChanged();
+        switchButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked){
+                    LogUtils.logE("MainActivity","打开");
+                    playMusic(curBgm);
+                }else {
+                    if (mediaPlayer.isPlaying()){
+                        mediaPlayer.stop();
+                    }
+                    LogUtils.logE("MainActivity","关闭");
+                }
+            }
+        });
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -174,6 +204,7 @@ public class MainActivity extends BaseActivity {
     public void initData() {
         initBanner();
         initRefresh();
+        initPlayer();
     }
 
     private String getInfo() {
@@ -388,6 +419,8 @@ public class MainActivity extends BaseActivity {
     private void checkPermission() {
         RxPermissions rxPermissions = new RxPermissions(this);
         rxPermissions.requestEach(Manifest.permission.READ_PHONE_STATE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.READ_EXTERNAL_STORAGE,
                 Manifest.permission.WRITE_SETTINGS)
                 .subscribe(new Observer<Permission>() {
                     @Override
@@ -398,7 +431,7 @@ public class MainActivity extends BaseActivity {
                     @Override
                     public void onNext(Permission permission) {
                         if (permission.granted) {
-                            install(MainActivity.this, Environment.getExternalStorageDirectory().getAbsolutePath() + "/123.apk");
+                           // install(MainActivity.this, Environment.getExternalStorageDirectory().getAbsolutePath() + "/123.apk");
                         } else if (permission.shouldShowRequestPermissionRationale) {
                             return;
                         } else {
@@ -573,7 +606,7 @@ public class MainActivity extends BaseActivity {
                         JniActivity.start(MainActivity.this);
                         break;
                     case 11://重启
-                        openPopWindow();
+                        openPopWindow("功能未开启!");
                         break;
                     case 12://页面亮度展示
                         if (lightSwitch) {
@@ -598,6 +631,9 @@ public class MainActivity extends BaseActivity {
                         break;
                     case 17://SVG
                         SvgActivity.start(MainActivity.this);
+                        break;
+                    case 18://指纹识别
+                        FingerprintsRecogActivity.start(MainActivity.this);
                         break;
 
                 }
@@ -631,13 +667,14 @@ public class MainActivity extends BaseActivity {
         listInfo.add("字符拆分");
         listInfo.add("去重");
         listInfo.add("SVG");
+        listInfo.add("指纹识别");
         adapter1.getContacts().addAll(listInfo);
         adapter1.notifyDataSetChanged();
         smartRefreshLayout.finishLoadMore();
         smartRefreshLayout.finishRefresh();
     }
     //打开弹出框
-    private void openPopWindow(){
+    private void openPopWindow(String info){
         View view = LayoutInflater.from(this).inflate(R.layout.no_content_show,null,false);
         PopupWindow popupWindow = new PopupWindow(view,400,200);
         popupWindow.setFocusable(true);
@@ -645,6 +682,48 @@ public class MainActivity extends BaseActivity {
         popupWindow.setOutsideTouchable(true);
         popupWindow.setAnimationStyle(R.style.mypopwindow_anim_style);
         popupWindow.showAtLocation(drawerLayout, Gravity.CENTER,0,0);
+        textView = view.findViewById(R.id.textView);
+        textView.setText(info);
+    }
+    //播放音乐
+    private void playMusic(int index){
+        this.curBgm = index;
+        mediaPlayer.reset();
+        try {
+            mediaPlayer.setDataSource(bgms[index]);
+            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            mediaPlayer.prepareAsync();
+            mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mediaPlayer) {
+                    mediaPlayer.start();
+                }
+            });
 
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    private void initPlayer(){
+        mediaPlayer = new MediaPlayer();
+        mediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+            @Override
+            public boolean onError(MediaPlayer mp, int what, int extra) {
+                openPopWindow("BGM播放错误");
+                return false;
+            }
+        });
+        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                if (curBgm==2){
+                    playMusic(0);
+                    curBgm = 0;
+                }else {
+                    playMusic(curBgm+1);
+                    curBgm++;
+                }
+            }
+        });
     }
 }
